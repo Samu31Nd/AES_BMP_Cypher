@@ -1,73 +1,105 @@
 package main
 
 import (
-	"fmt"
+	"labAES28_04/aesutils"
 	"labAES28_04/ui"
-	//"labAES28_04/aesutils"
+	"log"
 )
 
 func main() {
-	//aqui va algo asi como menu.seleccionar()
-	//donde sera cifrar o decifrar
-	textHelpGetKey := "Ingresa la llave de "
 	quitWithSelected, option := ui.GetOption("Operación a realizar:", []string{"Cifrado", "Decifrado"})
 	if !quitWithSelected {
 		return
 	}
-
+	var sufix string
+	textHelpGetKey := []string{"Ingresa la llave de ", ""}
 	if option == 0 {
-		textHelpGetKey += "cifrado"
+		textHelpGetKey[0] += "cifrado"
+		textHelpGetKey[1] += "cifrada"
+		sufix = "e"
 	} else {
-		textHelpGetKey += "decifrado"
+		textHelpGetKey[0] += "decifrado"
+		textHelpGetKey[1] += "decifrada"
+		sufix = "d"
 	}
-	//var mode int
-	quitWithSelected, _ = ui.GetOption("Modo de operación:", []string{"ECB", "CBC", "CFB", "OFB", "CTR"})
+	var mode int
+	quitWithSelected, mode = ui.GetOption("Modo de operación:", []string{"ECB", "CBC", "CFB", "OFB", "CTR"})
 	if !quitWithSelected {
 		return
 	}
 
-	file := ui.GetFile()
-	quitWithSelected, _ = ui.GetKey(16, "AES key (16 bytes)", textHelpGetKey)
+	quitWithSelected, file := ui.GetFile()
+	if !quitWithSelected {
+		return
+	}
+	h, _, pixels := aesutils.ReadBmp(file)
+	var key string
+	quitWithSelected, key = ui.GetKey(16, "AES key (16 bytes)", textHelpGetKey[0])
 	if !quitWithSelected {
 		return
 	}
 
-	quitWithSelected, _ = ui.GetKey(16, "C0 (16 bytes)", "Ingresa el vector de inicialización:")
-	if !quitWithSelected {
-		return
-	}
-	fmt.Println(file)
-
-	/* UNICAMENTE CBC
-
-	if option == cifrar {
-		*luego sera menu.elegirArchivo(), regresa path*
-		*key := []byte("llave_ingresada")*
-
-		inputFile := "nombre_archivo.bmp"
-		outputEncrypted := "nombre_archivo_e_cbc.bmp"
-
-		data, err := os.ReadFile(inputFile)
-		if err != nil {
-			fmt.Println("Error leyendo archivo")
+	var c0 string
+	if mode != 0 {
+		quitWithSelected, c0 = ui.GetKey(16, "C0 (16 bytes)", "Ingresa el vector de inicialización:")
+		if !quitWithSelected {
 			return
 		}
+	}
 
-		encryptedData, err := aesutils.encryptAES(data, key)
-		if err != nil {
-			fmt.Println("Error cifrando")
-			return
+	var err error
+	var newName string
+	var encryptedPixels []byte
+	switch mode {
+	case 0:
+		if option == 0 {
+			encryptedPixels, err = aesutils.CifrarAES_ECB([]byte(key), pixels)
+		} else {
+			encryptedPixels, err = aesutils.DecifrarAES_ECB([]byte(key), pixels)
 		}
-		os.WriteFile(outputEncrypted,encryptedData, 0644 )
+		newName = aesutils.GetNewBMPFilename(file, sufix+"ECB")
+	case 1:
+		if option == 0 {
+			encryptedPixels, err = aesutils.CifrarAES_CBC([]byte(c0), []byte(key), h, pixels)
+		} else {
+			encryptedPixels, err = aesutils.DecifrarAES_CBC([]byte(c0), []byte(key), h, pixels)
+		}
+		newName = aesutils.GetNewBMPFilename(file, sufix+"CBC")
+	case 2:
+		if option == 0 {
+			encryptedPixels, err = aesutils.CifrarAES_CFB([]byte(c0), []byte(key), h, pixels)
+		} else {
+			encryptedPixels, err = aesutils.DecifrarAES_CFB([]byte(c0), []byte(key), h, pixels)
+		}
+		newName = aesutils.GetNewBMPFilename(file, sufix+"CFB")
+	case 3:
+		if option == 0 {
+			encryptedPixels, err = aesutils.CifrarAES_OFB([]byte(c0), []byte(key), h, pixels)
+		} else {
+			encryptedPixels, err = aesutils.DecifrarAES_OFB([]byte(c0), []byte(key), h, pixels)
+		}
+		newName = aesutils.GetNewBMPFilename(file, sufix+"OFB")
+	case 4:
+		if option == 0 {
+			encryptedPixels, err = aesutils.CifrarAES_CTR([]byte(c0), []byte(key), h, pixels)
+		} else {
+			encryptedPixels, err = aesutils.DecifrarAES_CTR([]byte(c0), []byte(key), h, pixels)
+		}
+		newName = aesutils.GetNewBMPFilename(file, sufix+"CTR")
+	default:
+		panic("Index out of range!")
 	}
 
-	if option == descifrar {
-
+	if err != nil {
+		ui.ShowMsgDialog("La imagen tuvo errores al ser cifrada", true)
+		log.Fatal(err)
 	}
-	*/
 
-	//cifrarArchivoCBC(archivo)
-	//cifrarArchivoCFB(archivo)
-	//cifrarArchivoOFB(archivo)
-	//else
+	err = aesutils.WriteBmpWithHeaderStruct(newName, h, encryptedPixels)
+	if err != nil {
+		ui.ShowMsgDialog("La imagen no pudo ser "+textHelpGetKey[1]+"!\n"+err.Error(), true)
+	} else {
+		ui.ShowMsgDialog("La imagen "+newName+" ha sido "+textHelpGetKey[1]+" con exito!", false)
+	}
+
 }

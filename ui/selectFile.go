@@ -86,7 +86,7 @@ func (m ModelFP) View() string {
 	return s.String()
 }
 
-func GetFile() string {
+func GetFile() (bool, string) {
 	fp := filepicker.New()
 	info, errStat := os.Stat(directoryOfFiles)
 	if os.IsNotExist(errStat) && !(info.IsDir()) {
@@ -106,10 +106,8 @@ func GetFile() string {
 	}
 	tm, _ := tea.NewProgram(&m).Run()
 	mm := tm.(ModelFP)
-	/*if mm.SelectedFile == "" {
-		fmt.Println("\n Selected nothing!")
-	} else {
-		fmt.Println("\n  You selected: " + m.Filepicker.Styles.Selected.Render(mm.SelectedFile) + "\n")
-	}*/
-	return mm.SelectedFile
+	if mm.SelectedFile == "" {
+		return false, ""
+	}
+	return true, mm.SelectedFile
 }
