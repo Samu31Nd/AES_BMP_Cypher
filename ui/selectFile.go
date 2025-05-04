@@ -13,7 +13,7 @@ import (
 
 const (
 	directoryOfFiles = "files"
-	filePickerHeight = 14
+	filePickerHeight = 9
 )
 
 type ModelFP struct {
@@ -82,7 +82,8 @@ func (m ModelFP) View() string {
 	} else {
 		s.WriteString(fourMarginLeft.Render("Archivo seleccionado: " + m.Filepicker.Styles.Selected.Render(m.SelectedFile)))
 	}
-	s.WriteString("\n\n" + fourMarginLeft.Render(m.Filepicker.View()) + "\n")
+	s.WriteString("\n\n" + fourMarginLeft.Render(m.Filepicker.View()) + "\n" +
+		filePickerHelpStyle.Render("↑/k: up • ↓/j: down • esc: Go up directory • enter: select file • q: continue"))
 	return s.String()
 }
 
