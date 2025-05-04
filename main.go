@@ -60,30 +60,30 @@ func main() {
 		newName = aesutils.GetNewBMPFilename(file, sufix+"ECB")
 	case 1:
 		if option == 0 {
-			encryptedPixels, err = aesutils.CifrarAES_CBC([]byte(c0), []byte(key), h, pixels)
+			encryptedPixels, err = aesutils.CifrarAES_CBC([]byte(c0), []byte(key), pixels)
 		} else {
-			encryptedPixels, err = aesutils.DecifrarAES_CBC([]byte(c0), []byte(key), h, pixels)
+			encryptedPixels, err = aesutils.DecifrarAES_CBC([]byte(c0), []byte(key), pixels)
 		}
 		newName = aesutils.GetNewBMPFilename(file, sufix+"CBC")
 	case 2:
 		if option == 0 {
-			encryptedPixels, err = aesutils.CifrarAES_CFB([]byte(c0), []byte(key), h, pixels)
+			encryptedPixels, err = aesutils.CifrarAES_CFB([]byte(c0), []byte(key), pixels)
 		} else {
-			encryptedPixels, err = aesutils.DecifrarAES_CFB([]byte(c0), []byte(key), h, pixels)
+			encryptedPixels, err = aesutils.DecifrarAES_CFB([]byte(c0), []byte(key), pixels)
 		}
 		newName = aesutils.GetNewBMPFilename(file, sufix+"CFB")
 	case 3:
 		if option == 0 {
-			encryptedPixels, err = aesutils.CifrarAES_OFB([]byte(c0), []byte(key), h, pixels)
+			encryptedPixels, err = aesutils.CifrarAES_OFB([]byte(c0), []byte(key), pixels)
 		} else {
-			encryptedPixels, err = aesutils.DecifrarAES_OFB([]byte(c0), []byte(key), h, pixels)
+			encryptedPixels, err = aesutils.DecifrarAES_OFB([]byte(c0), []byte(key), pixels)
 		}
 		newName = aesutils.GetNewBMPFilename(file, sufix+"OFB")
 	case 4:
 		if option == 0 {
-			encryptedPixels, err = aesutils.CifrarAES_CTR([]byte(c0), []byte(key), h, pixels)
+			encryptedPixels, err = aesutils.CifrarAES_CTR([]byte(c0), []byte(key), pixels)
 		} else {
-			encryptedPixels, err = aesutils.DecifrarAES_CTR([]byte(c0), []byte(key), h, pixels)
+			encryptedPixels, err = aesutils.DecifrarAES_CTR([]byte(c0), []byte(key), pixels)
 		}
 		newName = aesutils.GetNewBMPFilename(file, sufix+"CTR")
 	default:

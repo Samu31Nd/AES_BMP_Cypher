@@ -8,7 +8,7 @@ And enjoy!
 
 ### TODO:
 - [X] ECB.
-- [ ] CBC.
-- [ ] CFB.
-- [ ] CTR.
-- [ ] OFB.
+- [X] CBC.
+- [X] CFB.
+- [X] CTR.
+- [X] OFB.
